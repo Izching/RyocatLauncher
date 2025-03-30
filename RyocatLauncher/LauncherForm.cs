@@ -8,7 +8,7 @@ using System.IO.Compression;
 using System.Security.Cryptography;
 using CmlLib.Core.Downloader;
 
-namespace MyCustomLauncher;
+namespace RyocatLauncher;
 
 public partial class LauncherForm : MetroFramework.Forms.MetroForm
 {

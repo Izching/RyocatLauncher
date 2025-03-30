@@ -3,7 +3,7 @@ using CmlLib.Core.Auth.Microsoft;
 using CmlLib.Core.Auth.Microsoft.Sessions;
 using XboxAuthNet.OAuth;
 
-namespace MyCustomLauncher;
+namespace RyocatLauncher;
 
 public partial class AccountForm : Form
 {

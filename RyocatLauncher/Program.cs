@@ -1,4 +1,6 @@
-namespace MyCustomLauncher
+using RyocatLauncher;
+
+namespace RyocatLauncher
 {
     internal static class Program
     {

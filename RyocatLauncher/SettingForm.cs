@@ -1,9 +1,8 @@
 ﻿using CmlLib.Core;
 using MetroFramework.Components;
 using System.Diagnostics;
-using MaterialSkin.Controls;
 
-namespace MyCustomLauncher;
+namespace RyocatLauncher;
 
 public partial class SettingForm : MetroFramework.Forms.MetroForm
 {

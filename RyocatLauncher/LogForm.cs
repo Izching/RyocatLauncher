@@ -1,4 +1,4 @@
-﻿namespace MyCustomLauncher;
+﻿namespace RyocatLauncher;
 
 public partial class LogForm : Form
 {

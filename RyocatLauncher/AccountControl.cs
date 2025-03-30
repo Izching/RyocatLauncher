@@ -1,7 +1,7 @@
 ﻿using CmlLib.Core.Auth;
 using CmlLib.Core.Auth.Microsoft.Sessions;
 
-namespace MyCustomLauncher;
+namespace RyocatLauncher;
 
 public partial class AccountControl : UserControl
 {
