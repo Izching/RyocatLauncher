@@ -43,7 +43,7 @@ public partial class SettingForm : MetroFramework.Forms.MetroForm
     {
         Process.Start(new ProcessStartInfo
         {
-            FileName = "https://github.com/CmlLib/CmlLib.Core",
+            FileName = "https://github.com/Izching/RyoketLauncher/blob/main/LICENSE",
             UseShellExecute = true,
         });
     }

@@ -56,7 +56,7 @@
             btnLicense.Name = "btnLicense";
             btnLicense.Size = new Size(75, 23);
             btnLicense.TabIndex = 3;
-            btnLicense.Text = "License";
+            btnLicense.Text = "라이센스";
             btnLicense.UseVisualStyleBackColor = true;
             btnLicense.Click += btnLicense_Click;
             // 
@@ -73,9 +73,8 @@
             label1.AutoSize = true;
             label1.Location = new Point(100, 77);
             label1.Name = "label1";
-            label1.Size = new Size(39, 15);
+            label1.Size = new Size(0, 15);
             label1.TabIndex = 5;
-            label1.Text = "label1";
             label1.Click += label1_Click;
             // 
             // label2
@@ -90,7 +89,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(249, 159);
+            button1.Location = new Point(485, 74);
             button1.Name = "button1";
             button1.Size = new Size(75, 23);
             button1.TabIndex = 7;
@@ -110,7 +109,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(500, 147);
+            label4.Location = new Point(492, 147);
             label4.Name = "label4";
             label4.Size = new Size(60, 15);
             label4.TabIndex = 9;

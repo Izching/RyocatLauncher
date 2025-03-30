@@ -6,6 +6,7 @@ using CmlLib.Core.Installer.FabricMC;
 using System.Net;
 using System.IO.Compression;
 using System.Security.Cryptography;
+using CmlLib.Core.Downloader;
 
 namespace MyCustomLauncher;
 
@@ -13,6 +14,8 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 {
     private readonly MSession _session;
     private readonly CMLauncher _launcher;
+
+    private LogForm? logForm;
 
     private bool exitOnClose = true;
     private const string ModpackUrl = "http://mc.yu.ac.kr/ryoket/ryoket.zip";
@@ -26,7 +29,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
         // MyLauncher 폴더 경로 설정
-        string myLauncherPath = Path.Combine(appDataPath, "MyLauncher");
+        string myLauncherPath = Path.Combine(appDataPath, "RyocatLauncher");
 
 
         // 폴더가 없으면 생성하기
@@ -39,52 +42,74 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         var customPath = new MinecraftPath(myLauncherPath);
 
         _launcher = new CMLauncher(customPath);
+        _launcher.FileChanged += launcher_FileChanged;
+        _launcher.ProgressChanged += launcher_ProgressChanged;
 
         InitializeComponent();
     }
 
+    //마인크래프트 Progress 진행도
+    private void launcher_ProgressChanged(object? sender, System.ComponentModel.ProgressChangedEventArgs e)
+    {
+        SetProgress(e.ProgressPercentage, $"[Minecraft] 다운로드 중... {e.ProgressPercentage}%");
+    }
+
+    //마인크래프트 Files 진행도
+    private void launcher_FileChanged(CmlLib.Core.Downloader.DownloadFileChangedEventArgs e)
+    {
+        pbFiles.Maximum = e.TotalFileCount;
+        pbFiles.Value = e.ProgressedFileCount;
+    }
+
+    private void SetProgress(int percent, string message)
+    {
+        pbProgress.Value = percent;
+        lbProgress.Text = message;
+    }
     private void LauncherForm_Load(object sender, EventArgs e)
     {
         showAccountControl();
         //await listVersions();
         //await listFabricVersions();
+        pbProgress.Maximum = 100; //Progress 최대 진행도 100으로 설정
     }
 
-    private async Task listVersions()
-    {
-        var version = await _launcher.GetVersionAsync("1.21.1");
+    // 마인크래프트 버전 리스트업 매서드
+    //private async Task listVersions()
+    //{
+    //    var version = await _launcher.GetVersionAsync("1.21.1");
 
-        cbVersion.Items.Clear();
+    //    cbVersion.Items.Clear();
 
-        cbVersion.Text = "1.21.1";
-    }
+    //    cbVersion.Text = "1.21.1";
+    //}
 
 
+    // fabric 버전 리스트업 매서드
+    //private async Task listFabricVersions()
+    //{
+    //    var fabricVersionLoader = new FabricVersionLoader();
+    //    var fabricVersions = await fabricVersionLoader.GetVersionMetadatasAsync();
+    //    var targetVersion = fabricVersions.FirstOrDefault(v => v.Name == "fabric-loader-0.16.10-1.21.1");
 
-    private async Task listFabricVersions()
-    {
-        var fabricVersionLoader = new FabricVersionLoader();
-        var fabricVersions = await fabricVersionLoader.GetVersionMetadatasAsync();
-        var targetVersion = fabricVersions.FirstOrDefault(v => v.Name == "fabric-loader-0.16.10-1.21.1");
+    //    cbFabricVersions.Items.Clear();
+    //    cbFabricVersions.Text = "fabric-loader-0.16.10-1.21.1";
 
-        cbFabricVersions.Items.Clear();
-        cbFabricVersions.Text = "fabric-loader-0.16.10-1.21.1";
+    //    ////fabric 버전 확인용
+    //    //var fabricVersionLoader = new FabricVersionLoader();
+    //    //var fabricVersions = await fabricVersionLoader.GetVersionMetadatasAsync();
 
-        ////fabric 버전 확인용
-        //var fabricVersionLoader = new FabricVersionLoader();
-        //var fabricVersions = await fabricVersionLoader.GetVersionMetadatasAsync();
+    //    //cbFabricVersions.Items.Clear();
+    //    //foreach (var v in fabricVersions)
+    //    //{
+    //    //    cbFabricVersions.Items.Add(v.Name);
+    //    //}
 
-        //cbFabricVersions.Items.Clear();
-        //foreach (var v in fabricVersions)
-        //{
-        //    cbFabricVersions.Items.Add(v.Name);
-        //}
-
-        //if (fabricVersions.Count() > 0)
-        //{
-        //    cbFabricVersions.SelectedIndex = 0;
-        //}
-    }
+    //    //if (fabricVersions.Count() > 0)
+    //    //{
+    //    //    cbFabricVersions.SelectedIndex = 0;
+    //    //}
+    //}
 
     private void showAccountControl()
     {
@@ -96,7 +121,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
     private async void btnStart_Click(object sender, EventArgs e)
     {
         this.Enabled = false;
-        const string FabricVersionName = "fabric-loader-0.16.10-1.21.1"; // 고정된 Fabric 버전 이름
+        const string FabricVersionName = "fabric-loader-0.16.10-1.21.1"; // Fabric 버전명
         var path = _launcher.MinecraftPath;
 
         try
@@ -104,16 +129,14 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
             string basePath = _launcher.MinecraftPath.BasePath;
             var fabricVersionPath = Path.Combine(path.Versions, FabricVersionName);
-            var fabricInstalled = Directory.Exists(fabricVersionPath);
 
             var fabricVersionLoader = new FabricVersionLoader();
             var fabricVersions = await fabricVersionLoader.GetVersionMetadatasAsync();
             var fabric = fabricVersions.GetVersionMetadata(FabricVersionName);
 
+            SetProgress(0, "[Fabric] 다운로드 시작...");
             await fabric.SaveAsync(path);
-            fabricInstalled = true;
-
-            var fabricJarPath = Path.Combine(path.Versions, "fabric-loader-0.16.10-1.21.1.jar");
+            SetProgress(100, "[Fabric] 다운로드 완료...");
 
             await DownloadAndUpdateFiles(basePath);
 
@@ -121,13 +144,14 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             var process = await _launcher.CreateProcessAsync(FabricVersionName, new MLaunchOption
             {
                 Session = _session,
-                ServerIp = "mc.yu.ac.kr",
-                ServerPort = 25568,
+                ServerIp = "mc.yu.ac.kr", //서버 주소
+                ServerPort = 25568, //포트
                 MaximumRamMb = selectedMemoryMb // 메모리 설정
             });
 
-            var logForm = new LogForm();
-            logForm.Show();
+            SetProgress(100, "게임 실행 중...");
+            logForm = new LogForm();
+            logForm.Hide(); //초기설정으로 로그 숨김
 
             var processUtil = new ProcessUtil(process);
             processUtil.OutputReceived += (s, e) => logForm.AppendLog(e);
@@ -141,11 +165,6 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         this.Enabled = true;
     }
 
-    private void _launcher_ProgressChanged(object? sender, System.ComponentModel.ProgressChangedEventArgs e)
-    {
-        pbProgress.Maximum = 100;
-        pbProgress.Value = e.ProgressPercentage;
-    }
 
 
     private void btnSetting_Click(object sender, EventArgs e)
@@ -190,6 +209,14 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
         using (var client = new WebClient())
         {
+
+            client.DownloadProgressChanged += (s, e) =>
+            {
+                SetProgress(e.ProgressPercentage, $"[Modpack] 다운로드 중... {e.ProgressPercentage}%");
+                pbFiles.Maximum = 100;
+                pbFiles.Value = e.ProgressPercentage;
+            };
+
             try
             {
                 // 서버의 해시값 다운로드
@@ -205,17 +232,15 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
                     await client.DownloadFileTaskAsync(ModpackUrl, downloadedZipPath);
 
                     // 압축 해제
+                    SetProgress(0, $"[Modpack] 압축 해제 중...");
                     ZipFile.ExtractToDirectory(downloadedZipPath, basePath, true);
                     File.Delete(downloadedZipPath);
+                    SetProgress(100, $"[Modpack] 압축 해제 완료...");
 
                     // 새로운 해시 값을 저장
                     File.WriteAllText(hashFilePath, serverHash);
 
                     MessageBox.Show("모드팩이 업데이트 되었습니다.");
-                }
-                else
-                {
-                    MessageBox.Show("모드팩이 최신 상태입니다.");
                 }
             }
             catch (Exception ex)
@@ -224,4 +249,15 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             }
         }
     }
+
+    private void btnOpenLog_Click(object sender, EventArgs e)
+    {
+        if (logForm == null || logForm.IsDisposed)
+        {
+            MessageBox.Show("로그가 시작되지 않았습니다.");
+            return;
+        }
+        logForm.Show();
+    }
+
 }

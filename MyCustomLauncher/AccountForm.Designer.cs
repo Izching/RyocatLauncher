@@ -31,29 +31,28 @@
             label1 = new Label();
             label2 = new Label();
             flAccounts = new FlowLayoutPanel();
-            btnNewAccount = new Button();
-            btnSetting = new Button();
             lbNoAccountInfo = new Label();
+            btnNewAccount = new Button();
             SuspendLayout();
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("맑은 고딕", 18F, FontStyle.Regular, GraphicsUnit.Point);
-            label1.Location = new Point(13, 26);
+            label1.Font = new Font("맑은 고딕", 18F, FontStyle.Bold, GraphicsUnit.Point);
+            label1.Location = new Point(102, 27);
             label1.Name = "label1";
-            label1.Size = new Size(449, 32);
+            label1.Size = new Size(277, 32);
             label1.TabIndex = 0;
-            label1.Text = "CmlLib.Core Custom Minecraft Launcher";
+            label1.Text = "YUMC 모드 서버 접속기";
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.Location = new Point(12, 84);
             label2.Name = "label2";
-            label2.Size = new Size(64, 15);
+            label2.Size = new Size(42, 15);
             label2.TabIndex = 1;
-            label2.Text = "Accounts: ";
+            label2.Text = "계정 : ";
             // 
             // flAccounts
             // 
@@ -62,33 +61,24 @@
             flAccounts.Size = new Size(450, 297);
             flAccounts.TabIndex = 2;
             // 
+            // lbNoAccountInfo
+            // 
+            lbNoAccountInfo.AutoSize = true;
+            lbNoAccountInfo.Location = new Point(125, 239);
+            lbNoAccountInfo.Name = "lbNoAccountInfo";
+            lbNoAccountInfo.Size = new Size(229, 15);
+            lbNoAccountInfo.TabIndex = 5;
+            lbNoAccountInfo.Text = "'새 계정 등록' 을 눌러 계정을 추가하세요";
+            // 
             // btnNewAccount
             // 
             btnNewAccount.Location = new Point(12, 405);
             btnNewAccount.Name = "btnNewAccount";
             btnNewAccount.Size = new Size(449, 65);
             btnNewAccount.TabIndex = 3;
-            btnNewAccount.Text = "Add New Account";
+            btnNewAccount.Text = "새 계정 등록";
             btnNewAccount.UseVisualStyleBackColor = true;
             btnNewAccount.Click += btnNewAccount_Click;
-            // 
-            // btnSetting
-            // 
-            btnSetting.Location = new Point(387, 73);
-            btnSetting.Name = "btnSetting";
-            btnSetting.Size = new Size(75, 23);
-            btnSetting.TabIndex = 4;
-            btnSetting.Text = "Setting";
-            btnSetting.UseVisualStyleBackColor = true;
-            // 
-            // lbNoAccountInfo
-            // 
-            lbNoAccountInfo.AutoSize = true;
-            lbNoAccountInfo.Location = new Point(152, 224);
-            lbNoAccountInfo.Name = "lbNoAccountInfo";
-            lbNoAccountInfo.Size = new Size(188, 15);
-            lbNoAccountInfo.TabIndex = 5;
-            lbNoAccountInfo.Text = "Click 'Add New Account' to login";
             // 
             // AccountForm
             // 
@@ -96,7 +86,6 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(474, 481);
             Controls.Add(lbNoAccountInfo);
-            Controls.Add(btnSetting);
             Controls.Add(btnNewAccount);
             Controls.Add(flAccounts);
             Controls.Add(label2);
@@ -114,7 +103,6 @@
         private Label label2;
         private FlowLayoutPanel flAccounts;
         private Button btnNewAccount;
-        private Button btnSetting;
         private Label lbNoAccountInfo;
     }
 }

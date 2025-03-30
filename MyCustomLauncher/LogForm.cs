@@ -23,7 +23,8 @@ public partial class LogForm : Form
 
     private void LogForm_FormClosing(object sender, FormClosingEventArgs e)
     {
-        showLog = false;
+        e.Cancel = true;
+        this.Hide();
     }
 
     private void LogForm_Shown(object sender, EventArgs e)
@@ -31,8 +32,4 @@ public partial class LogForm : Form
         showLog = true;
     }
 
-    private void richTextBox1_TextChanged(object sender, EventArgs e)
-    {
-
-    }
 }
