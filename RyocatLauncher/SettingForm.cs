@@ -1,6 +1,4 @@
-﻿using CmlLib.Core;
-using MetroFramework.Components;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace RyocatLauncher;
 
@@ -51,16 +49,6 @@ public partial class SettingForm : MetroFramework.Forms.MetroForm
     {
         SelectedMemory = trackBar1.Value * 1024;
         label1.Text = $"{SelectedMemory} MB";
-    }
-
-    private void label1_Click(object sender, EventArgs e)
-    {
-
-    }
-
-    private void label2_Click(object sender, EventArgs e)
-    {
-
     }
 
     private void button1_Click(object sender, EventArgs e)

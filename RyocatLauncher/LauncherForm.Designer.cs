@@ -37,6 +37,7 @@
             btnOpenLog = new Button();
             label1 = new Label();
             label2 = new Label();
+            btnDeleteAll = new Button();
             SuspendLayout();
             // 
             // pbFiles
@@ -45,7 +46,6 @@
             pbFiles.Name = "pbFiles";
             pbFiles.Size = new Size(353, 23);
             pbFiles.TabIndex = 3;
-            pbFiles.Click += pbFiles_Click;
             // 
             // pbProgress
             // 
@@ -88,7 +88,6 @@
             pAccountHolder.Name = "pAccountHolder";
             pAccountHolder.Size = new Size(400, 100);
             pAccountHolder.TabIndex = 8;
-            pAccountHolder.Paint += pAccountHolder_Paint;
             // 
             // btnOpenLog
             // 
@@ -120,11 +119,22 @@
             label2.TabIndex = 11;
             label2.Text = "Ryocat Launcher";
             // 
+            // btnDeleteAll
+            // 
+            btnDeleteAll.Location = new Point(209, 198);
+            btnDeleteAll.Name = "btnDeleteAll";
+            btnDeleteAll.Size = new Size(97, 23);
+            btnDeleteAll.TabIndex = 12;
+            btnDeleteAll.Text = "모드팩 초기화";
+            btnDeleteAll.UseVisualStyleBackColor = true;
+            btnDeleteAll.Click += btnDeleteAll_Click;
+            // 
             // LauncherForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(422, 386);
+            Controls.Add(btnDeleteAll);
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(btnOpenLog);
@@ -151,5 +161,6 @@
         private Button btnOpenLog;
         private Label label1;
         private Label label2;
+        private Button btnDeleteAll;
     }
 }

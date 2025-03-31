@@ -95,7 +95,6 @@
             Controls.Add(pbAvatar);
             Name = "AccountControl";
             Size = new Size(400, 100);
-            Load += AccountControl_Load;
             ((System.ComponentModel.ISupportInitialize)pbAvatar).EndInit();
             ResumeLayout(false);
             PerformLayout();

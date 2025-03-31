@@ -56,8 +56,4 @@ public partial class AccountControl : UserControl
         RemoveClicked?.Invoke(this, e);
     }
 
-    private void AccountControl_Load(object sender, EventArgs e)
-    {
-
-    }
 }

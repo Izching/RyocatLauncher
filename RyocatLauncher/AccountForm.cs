@@ -54,7 +54,7 @@ public partial class AccountForm : Form
         }
         catch (MicrosoftOAuthException)
         {
-            // auto login failed
+            
         }
     }
 

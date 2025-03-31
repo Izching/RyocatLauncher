@@ -75,7 +75,6 @@
             label1.Name = "label1";
             label1.Size = new Size(0, 15);
             label1.TabIndex = 5;
-            label1.Click += label1_Click;
             // 
             // label2
             // 
@@ -85,7 +84,6 @@
             label2.Size = new Size(78, 15);
             label2.TabIndex = 6;
             label2.Text = "메모리 할당 :";
-            label2.Click += label2_Click;
             // 
             // button1
             // 

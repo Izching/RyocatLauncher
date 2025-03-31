@@ -1,12 +1,9 @@
 ﻿using CmlLib.Core;
 using CmlLib.Core.Auth;
-using CmlLib.Core.Version;
 using CmlLib.Utils;
 using CmlLib.Core.Installer.FabricMC;
 using System.Net;
 using System.IO.Compression;
-using System.Security.Cryptography;
-using CmlLib.Core.Downloader;
 
 namespace RyocatLauncher;
 
@@ -136,7 +133,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
             SetProgress(0, "[Fabric] 다운로드 시작...");
             await fabric.SaveAsync(path);
-            SetProgress(100, "[Fabric] 다운로드 완료...");
+            SetProgress(100, "[Fabric] 다운로드 완료");
 
             await DownloadAndUpdateFiles(basePath);
 
@@ -185,21 +182,6 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             Environment.Exit(0);
     }
 
-    private void pAccountHolder_Paint(object sender, PaintEventArgs e)
-    {
-
-    }
-
-    private void cbVersion_SelectedIndexChanged(object sender, EventArgs e)
-    {
-
-    }
-
-    private void pbFiles_Click(object sender, EventArgs e)
-    {
-
-    }
-
     private async Task DownloadAndUpdateFiles(string basePath)
     {
         string downloadedZipPath = Path.Combine(basePath, "temp.zip");
@@ -235,7 +217,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
                     SetProgress(0, $"[Modpack] 압축 해제 중...");
                     ZipFile.ExtractToDirectory(downloadedZipPath, basePath, true);
                     File.Delete(downloadedZipPath);
-                    SetProgress(100, $"[Modpack] 압축 해제 완료...");
+                    SetProgress(100, $"[Modpack] 압축 해제 완료");
 
                     // 새로운 해시 값을 저장
                     File.WriteAllText(hashFilePath, serverHash);
@@ -245,7 +227,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"오류 발생: {ex.Message}");
+                MessageBox.Show($"모드팩 설치 실패: {ex.Message}");
             }
         }
     }
@@ -258,6 +240,107 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             return;
         }
         logForm.Show();
+    }
+
+    private void btnDeleteAll_Click(object sender, EventArgs e)
+    {
+        this.Enabled = false;
+
+        DialogResult deleteConfirm = MessageBox.Show("Ryocat Launcher 로 실행한 마인크래프트 파일이 삭제됩니다. \n" +
+            "(Ryocat Launcher로 실행하지 않은 마인크래프트 파일은 영향 없음) \n" +
+            "서버의 모드팩이 변경되었거나 접속이 되지 않을 때 사용을 권장합니다.\n" +
+            "모드팩 파일 초기화를 진행하시겠습니까? \n", "", MessageBoxButtons.YesNo);
+
+        
+        if (deleteConfirm == DialogResult.Yes) 
+        {
+            try
+            {
+                DeleteAll();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"초기화 실패: {ex.Message}");
+            }
+            
+        }
+
+        this.Enabled = true;
+    }
+
+    private void DeleteAll()
+    {
+        string launcherPath = _launcher.MinecraftPath.BasePath;
+        
+        if(!Directory.Exists(launcherPath))
+        {
+            MessageBox.Show("파일이 존재하지 않습니다.");
+            return;
+        }
+
+        string[] files = Directory.GetFiles(launcherPath, "*", SearchOption.AllDirectories);
+        string[] directories = Directory.GetDirectories(launcherPath, "*", SearchOption.AllDirectories);
+        int total = files.Length + directories.Length;
+        int deleted = 0;
+        int failed = 0;
+
+        pbFiles.Maximum = total;
+        pbFiles.Value = 0;
+        SetProgress(0, $"초기화 중...");
+        lbProgress.Refresh();
+
+        for (int i = 0; i < files.Length; i++)
+        {
+            string file = files[i];
+
+            try
+            {
+                File.Delete(file);
+                deleted++;
+            }
+            catch
+            {
+                failed++;
+            }
+
+            //진행도 계산 및 출력
+            pbFiles.Value = deleted;
+            int percent = (int)((deleted / (float)total) * 100);
+            SetProgress(percent, $"초기화 중... {percent}%");
+        }
+
+        //폴더들 삭제
+        for (int i = directories.Length - 1; i >= 0; i--)
+        {
+            try 
+            { 
+                Directory.Delete(directories[i], true); 
+                deleted++;
+            }
+            catch 
+            { 
+                failed++; 
+            }
+
+            //진행도 계산 및 출력
+            pbFiles.Value = deleted;
+            int percent = (int)((deleted / (float)total) * 100);
+            SetProgress(percent, $"초기화 중... {percent}%");
+        }
+
+        SetProgress(100, $"초기화 완료");
+
+        if (failed > 0)
+        {
+            MessageBox.Show($"일부 파일 삭제 실패\n 총 실패 파일 수: {failed}\n" +
+                "초기화를 재시도 하거나 수동으로 폴더를 삭제해주세요\n" +
+                $"경로명: {launcherPath}");
+        }
+        else
+        {
+            MessageBox.Show("초기화가 완료되었습니다. 런처를 재시작 해주세요");
+            Application.Exit();
+        }
     }
 
 }
