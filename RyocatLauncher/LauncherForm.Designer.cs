@@ -125,7 +125,7 @@
             btnDeleteAll.Name = "btnDeleteAll";
             btnDeleteAll.Size = new Size(97, 23);
             btnDeleteAll.TabIndex = 12;
-            btnDeleteAll.Text = "모드팩 초기화";
+            btnDeleteAll.Text = "런처 초기화";
             btnDeleteAll.UseVisualStyleBackColor = true;
             btnDeleteAll.Click += btnDeleteAll_Click;
             // 

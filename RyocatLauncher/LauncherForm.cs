@@ -28,7 +28,6 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         // MyLauncher 폴더 경로 설정
         string myLauncherPath = Path.Combine(appDataPath, "RyocatLauncher");
 
-
         // 폴더가 없으면 생성하기
         if (!Directory.Exists(myLauncherPath))
         {
@@ -37,10 +36,11 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
         // MinecraftPath 객체를 MyLauncher 폴더로 설정
         var customPath = new MinecraftPath(myLauncherPath);
-
         _launcher = new CMLauncher(customPath);
         _launcher.FileChanged += launcher_FileChanged;
         _launcher.ProgressChanged += launcher_ProgressChanged;
+
+        selectedMemoryMb = LoadSelectedMemory();
 
         InitializeComponent();
     }
@@ -66,9 +66,10 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
     private void LauncherForm_Load(object sender, EventArgs e)
     {
         showAccountControl();
+
+        pbProgress.Maximum = 100; //Progress 최대 진행도 100으로 설정
         //await listVersions();
         //await listFabricVersions();
-        pbProgress.Maximum = 100; //Progress 최대 진행도 100으로 설정
     }
 
     // 마인크래프트 버전 리스트업 매서드
@@ -166,7 +167,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
     private void btnSetting_Click(object sender, EventArgs e)
     {
-        var form = new SettingForm();
+        var form = new SettingForm(selectedMemoryMb);
         form.FormClosingRequired += (s, e) =>
         {
             exitOnClose = false;
@@ -174,6 +175,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         };
         form.ShowDialog();
         selectedMemoryMb = form.SelectedMemory;
+        SaveSelectedMemory();
     }
 
     private void LauncherForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -246,10 +248,12 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
     {
         this.Enabled = false;
 
-        DialogResult deleteConfirm = MessageBox.Show("Ryocat Launcher 로 실행한 마인크래프트 파일이 삭제됩니다. \n" +
+        DialogResult deleteConfirm = MessageBox.Show("Ryocat Launcher로 실행한 마인크래프트 파일과 메모리 설정 정보가\n" +
+            "초기화됩니다. \n" +
             "(Ryocat Launcher로 실행하지 않은 마인크래프트 파일은 영향 없음) \n" +
             "서버의 모드팩이 변경되었거나 접속이 되지 않을 때 사용을 권장합니다.\n" +
-            "모드팩 파일 초기화를 진행하시겠습니까? \n", "", MessageBoxButtons.YesNo);
+            "반드시 마인크래프트를 완전히 종료하고 초기화를 진행해 주세요.\n" +
+            "런처 초기화를 진행하시겠습니까? \n", "", MessageBoxButtons.YesNo);
 
         
         if (deleteConfirm == DialogResult.Yes) 
@@ -328,19 +332,42 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             SetProgress(percent, $"초기화 중... {percent}%");
         }
 
-        SetProgress(100, $"초기화 완료");
-
         if (failed > 0)
         {
+            SetProgress(100, $"초기화 실패");
             MessageBox.Show($"일부 파일 삭제 실패\n 총 실패 파일 수: {failed}\n" +
                 "초기화를 재시도 하거나 수동으로 폴더를 삭제해주세요\n" +
                 $"경로명: {launcherPath}");
         }
         else
         {
+            SetProgress(100, $"초기화 성공");
             MessageBox.Show("초기화가 완료되었습니다. 런처를 재시작 해주세요");
             Application.Exit();
         }
     }
 
+    //메모리 설정값 저장
+    private void SaveSelectedMemory()
+    {
+        string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "RyocatLauncher", "memory.txt");
+        File.WriteAllText(path, selectedMemoryMb.ToString());
+    }
+    
+    //메모리 불러오기
+    private int LoadSelectedMemory()
+    {
+        string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "RyocatLauncher", "memory.txt");
+        if (File.Exists(path))
+        {
+            string content = File.ReadAllText(path);
+            if (int.TryParse(content, out int memory))
+            {
+                return memory;
+            }
+        }
+        return 4096;
+    }
 }

@@ -12,6 +12,7 @@ namespace RyocatLauncher
         {
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
+            System.Net.ServicePointManager.DefaultConnectionLimit = 256;
             ApplicationConfiguration.Initialize();
             var form = new AccountForm();
             form.Show();

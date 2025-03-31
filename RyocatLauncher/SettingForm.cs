@@ -11,8 +11,9 @@ public partial class SettingForm : MetroFramework.Forms.MetroForm
 
     public int SelectedMemory { get; private set; } = 4096; // 기본값 4GB
 
-    public SettingForm()
+    public SettingForm(int initialMemoryMb)
     {
+        SelectedMemory = initialMemoryMb;
         InitializeComponent();
     }
 
@@ -38,11 +39,32 @@ public partial class SettingForm : MetroFramework.Forms.MetroForm
 
     private void btnLicense_Click(object sender, EventArgs e)
     {
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "https://github.com/Izching/RyoketLauncher/blob/main/LICENSE",
-            UseShellExecute = true,
-        });
+        string licenseText = @"
+MIT License
+
+Copyright (c) 2020 권세인(AlphaBs)
+Copyright (c) 2023 CmlLib
+Copyright (c) 2025 Izching
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the ""Software""), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+";
+        MessageBox.Show(licenseText, "LICENSE");
     }
 
     private void trackBar1_Scroll(object sender, EventArgs e)

@@ -70,7 +70,7 @@
             btnLogin.Name = "btnLogin";
             btnLogin.Size = new Size(75, 23);
             btnLogin.TabIndex = 3;
-            btnLogin.Text = "Login";
+            btnLogin.Text = "로그인";
             btnLogin.UseVisualStyleBackColor = true;
             btnLogin.Click += btnLogin_Click;
             // 
@@ -80,7 +80,7 @@
             btnRemove.Name = "btnRemove";
             btnRemove.Size = new Size(75, 23);
             btnRemove.TabIndex = 4;
-            btnRemove.Text = "Remove";
+            btnRemove.Text = "제거";
             btnRemove.UseVisualStyleBackColor = true;
             btnRemove.Click += btnRemove_Click;
             // 
