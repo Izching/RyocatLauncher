@@ -5,8 +5,6 @@ VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RyocatLauncher", "RyocatLauncher\RyocatLauncher.csproj", "{05A14946-E8A9-47D8-BB8A-AF767E3361ED}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "RyocatLauncherSetup", "RyocatLauncherSetup\RyocatLauncherSetup.vdproj", "{38794213-CD1A-4041-9BE2-1E10990847EC}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,8 +15,6 @@ Global
 		{05A14946-E8A9-47D8-BB8A-AF767E3361ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05A14946-E8A9-47D8-BB8A-AF767E3361ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05A14946-E8A9-47D8-BB8A-AF767E3361ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{38794213-CD1A-4041-9BE2-1E10990847EC}.Debug|Any CPU.ActiveCfg = Debug
-		{38794213-CD1A-4041-9BE2-1E10990847EC}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
