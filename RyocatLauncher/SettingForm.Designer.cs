@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingForm));
             btnChangeAccount = new Button();
             btnLicense = new Button();
             trackBar1 = new TrackBar();
@@ -56,7 +57,7 @@
             btnLicense.Name = "btnLicense";
             btnLicense.Size = new Size(75, 23);
             btnLicense.TabIndex = 3;
-            btnLicense.Text = "라이센스";
+            btnLicense.Text = "라이선스";
             btnLicense.UseVisualStyleBackColor = true;
             btnLicense.Click += btnLicense_Click;
             // 
@@ -126,6 +127,7 @@
             Controls.Add(trackBar1);
             Controls.Add(btnLicense);
             Controls.Add(btnChangeAccount);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "SettingForm";
             Text = "설정";
             Load += SettingForm_Load;

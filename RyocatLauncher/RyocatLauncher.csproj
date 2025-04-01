@@ -6,7 +6,12 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>246px-Yumc_logo.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="246px-Yumc_logo.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CmlLib.Core" Version="3.3.9" />
