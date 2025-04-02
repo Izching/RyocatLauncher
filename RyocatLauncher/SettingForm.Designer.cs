@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingForm));
             btnChangeAccount = new Button();
             btnLicense = new Button();
             trackBar1 = new TrackBar();
@@ -126,6 +127,7 @@
             Controls.Add(trackBar1);
             Controls.Add(btnLicense);
             Controls.Add(btnChangeAccount);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "SettingForm";
             Text = "설정";
             Load += SettingForm_Load;

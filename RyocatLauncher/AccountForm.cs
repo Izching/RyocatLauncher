@@ -52,9 +52,13 @@ public partial class AccountForm : Form
             var result = await _loginHandler.AuthenticateSilently();
             showLauncherForm(result);
         }
+        catch (JEAuthException)
+        {
+            MessageBox.Show("로그인이 만료되었거나 유효하지 않습니다.\n다시 로그인해주세요.");
+        }
         catch (MicrosoftOAuthException)
         {
-            
+
         }
     }
 
@@ -84,6 +88,17 @@ public partial class AccountForm : Form
             var selectedAccount = control.Account ?? throw new InvalidOperationException();
             var result = await _loginHandler.Authenticate(selectedAccount);
             showLauncherForm(result);
+        }
+        catch (JEAuthException)
+        {
+            MessageBox.Show("로그인 정보가 만료되었거나 유효하지 않습니다.\n계정을 다시 등록해주세요.");
+
+            // 선택된 계정 제거
+            var selectedAccount = ((AccountControl)sender!).Account;
+            await _loginHandler.Signout(selectedAccount!);
+
+            // UI 새로고침
+            listAccounts();
         }
         catch (Exception ex)
         {

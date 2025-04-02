@@ -126,13 +126,14 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
         try
         {
-            // 1. 버전 폴더가 없으면 수동 다운로드
+            //버전 폴더가 없으면 수동 다운로드
             if (!Directory.Exists(versionPath) ||
                 !File.Exists(Path.Combine(versionPath, $"{FabricVersionName}.json")) ||
                 !File.Exists(Path.Combine(versionPath, $"{FabricVersionName}.jar")))
             {
                 Directory.CreateDirectory(versionPath);
-
+                
+                //fabric zip 파일 직접 다운로드
                 using (var client = new WebClient())
                 {
                     try
