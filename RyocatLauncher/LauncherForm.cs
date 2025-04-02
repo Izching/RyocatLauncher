@@ -1,7 +1,6 @@
 ﻿using CmlLib.Core;
 using CmlLib.Core.Auth;
 using CmlLib.Utils;
-using CmlLib.Core.Installer.FabricMC;
 using System.Net;
 using System.IO.Compression;
 
@@ -120,21 +119,43 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
     {
         this.Enabled = false;
         const string FabricVersionName = "fabric-loader-0.16.10-1.21.1"; // Fabric 버전명
+        string versionPath = Path.Combine(_launcher.MinecraftPath.Versions, FabricVersionName);
         var path = _launcher.MinecraftPath;
+        string basePath = _launcher.MinecraftPath.BasePath;
+        string FabricZipPath = Path.Combine(versionPath, "fabric.zip");
 
         try
         {
+            // 1. 버전 폴더가 없으면 수동 다운로드
+            if (!Directory.Exists(versionPath) ||
+                !File.Exists(Path.Combine(versionPath, $"{FabricVersionName}.json")) ||
+                !File.Exists(Path.Combine(versionPath, $"{FabricVersionName}.jar")))
+            {
+                Directory.CreateDirectory(versionPath);
 
-            string basePath = _launcher.MinecraftPath.BasePath;
-            var fabricVersionPath = Path.Combine(path.Versions, FabricVersionName);
-
-            var fabricVersionLoader = new FabricVersionLoader();
-            var fabricVersions = await fabricVersionLoader.GetVersionMetadatasAsync();
-            var fabric = fabricVersions.GetVersionMetadata(FabricVersionName);
-
-            SetProgress(0, "[Fabric] 다운로드 시작...");
-            await fabric.SaveAsync(path);
-            SetProgress(100, "[Fabric] 다운로드 완료");
+                using (var client = new WebClient())
+                {
+                    try
+                    {
+                        SetProgress(0, "[Fabric] 다운로드 중...");
+                        string zipUrl = $"https://meta.fabricmc.net/v2/versions/loader/1.21.1/0.16.10/profile/zip";
+                        await client.DownloadFileTaskAsync(zipUrl, FabricZipPath);
+                        ZipFile.ExtractToDirectory(FabricZipPath, _launcher.MinecraftPath.Versions, true);
+                        File.Delete(FabricZipPath);
+                        SetProgress(100, "[Fabric] 다운로드 완료");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"패브릭 설치 실패: {ex.Message}");
+                    }
+                }
+            }
+            else
+            {
+                SetProgress(100, "[Fabric] 이미 설치됨");
+            }
+            
+            
 
             await DownloadAndUpdateFiles(basePath);
 
@@ -147,7 +168,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
                 MaximumRamMb = selectedMemoryMb // 메모리 설정
             });
 
-            SetProgress(100, "게임 실행 중...");
+            SetProgress(100, "게임 실행 중... 잠시만 기다려 주세요");
             logForm = new LogForm();
             logForm.Hide(); //초기설정으로 로그 숨김
 
@@ -158,7 +179,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.ToString());
+            MessageBox.Show($"게임 실행 실패: {ex.Message}");
         }
         this.Enabled = true;
     }
