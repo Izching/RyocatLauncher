@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AccountForm));
             label1 = new Label();
             label2 = new Label();
             flAccounts = new FlowLayoutPanel();
@@ -65,12 +64,11 @@
             // lbNoAccountInfo
             // 
             lbNoAccountInfo.AutoSize = true;
-            lbNoAccountInfo.Location = new Point(97, 232);
+            lbNoAccountInfo.Location = new Point(125, 239);
             lbNoAccountInfo.Name = "lbNoAccountInfo";
-            lbNoAccountInfo.Size = new Size(287, 30);
+            lbNoAccountInfo.Size = new Size(229, 15);
             lbNoAccountInfo.TabIndex = 5;
-            lbNoAccountInfo.Text = "'새 계정 등록' 을 눌러 계정을 추가하세요\r\n로그인 화면을 불러오는 데 시간이 걸릴 수 있습니다";
-            lbNoAccountInfo.TextAlign = ContentAlignment.TopCenter;
+            lbNoAccountInfo.Text = "'새 계정 등록' 을 눌러 계정을 추가하세요";
             // 
             // btnNewAccount
             // 
@@ -92,7 +90,6 @@
             Controls.Add(flAccounts);
             Controls.Add(label2);
             Controls.Add(label1);
-            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "AccountForm";
             FormClosing += AccountForm_FormClosing;
             Load += AccountForm_Load;

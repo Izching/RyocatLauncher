@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LauncherForm));
             pbFiles = new ProgressBar();
             pbProgress = new ProgressBar();
             lbProgress = new Label();
@@ -145,7 +144,6 @@
             Controls.Add(lbProgress);
             Controls.Add(pbProgress);
             Controls.Add(pbFiles);
-            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "LauncherForm";
             FormClosing += LauncherForm_FormClosing;
             Load += LauncherForm_Load;
