@@ -57,7 +57,7 @@
             btnLicense.Name = "btnLicense";
             btnLicense.Size = new Size(75, 23);
             btnLicense.TabIndex = 3;
-            btnLicense.Text = "라이센스";
+            btnLicense.Text = "라이선스";
             btnLicense.UseVisualStyleBackColor = true;
             btnLicense.Click += btnLicense_Click;
             // 
