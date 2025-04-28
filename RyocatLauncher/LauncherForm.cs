@@ -61,6 +61,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
     {
         pbProgress.Value = percent;
         lbProgress.Text = message;
+        lbProgress.Refresh();
     }
     private void LauncherForm_Load(object sender, EventArgs e)
     {
@@ -132,7 +133,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
                 !File.Exists(Path.Combine(versionPath, $"{FabricVersionName}.jar")))
             {
                 Directory.CreateDirectory(versionPath);
-                
+
                 //fabric zip 파일 직접 다운로드
                 using (var client = new WebClient())
                 {
@@ -155,11 +156,8 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             {
                 SetProgress(100, "[Fabric] 이미 설치됨");
             }
-            
-            
 
             await DownloadAndUpdateFiles(basePath);
-
 
             var process = await _launcher.CreateProcessAsync(FabricVersionName, new MLaunchOption
             {
@@ -182,6 +180,8 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         {
             MessageBox.Show($"게임 실행 실패: {ex.Message}");
         }
+        await Task.Delay(60000); //1분 대기
+
         this.Enabled = true;
     }
 
@@ -206,6 +206,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             Environment.Exit(0);
     }
 
+    //모드팩 다운, 업데이트
     private async Task DownloadAndUpdateFiles(string basePath)
     {
         string downloadedZipPath = Path.Combine(basePath, "temp.zip");
@@ -215,7 +216,6 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
         using (var client = new WebClient())
         {
-
             client.DownloadProgressChanged += (s, e) =>
             {
                 SetProgress(e.ProgressPercentage, $"[Modpack] 다운로드 중... {e.ProgressPercentage}%");
@@ -232,7 +232,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
                 // 기존 해시 값 읽기 (없으면 null)
                 string? previousHash = File.Exists(hashFilePath) ? File.ReadAllText(hashFilePath).Trim() : null;
 
-                if (serverHash != previousHash)
+                if (previousHash == null)
                 {
                     // 해시 값이 다를 경우 zip 파일 다운로드
                     await client.DownloadFileTaskAsync(ModpackUrl, downloadedZipPath);
@@ -246,15 +246,48 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
                     // 새로운 해시 값을 저장
                     File.WriteAllText(hashFilePath, serverHash);
 
-                    MessageBox.Show("모드팩이 업데이트 되었습니다.");
+                    MessageBox.Show("모드팩 업데이트가 완료되었습니다.");
+                    return;
                 }
+
+                if (serverHash != previousHash)
+                {
+                    this.Enabled = false;
+
+                    DialogResult deleteConfirm = MessageBox.Show("" +
+                        "서버가 업데이트되었습니다.\n" +
+                        "안정적인 이용을 위해 런처 파일을 초기화하고 최신 버전으로\n" +
+                        "업데이트해야 합니다.\n" +
+                        "(서버 플레이 기록에는 영향을 주지 않습니다)\n" +
+                        "지금 초기화를 진행하시겠습니까? \n", "", MessageBoxButtons.YesNo);
+
+                    if (deleteConfirm == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            DeleteAll();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"초기화 실패: {ex.Message}");
+                        }
+                    }
+
+                    this.Enabled = true;
+                }
+
             }
+
             catch (Exception ex)
             {
                 MessageBox.Show($"모드팩 설치 실패: {ex.Message}");
             }
         }
     }
+
+    //옵션(단축키,언어), 메모리 설정 파일, 미니맵 파일 제외 삭제
+
+
 
     private void btnOpenLog_Click(object sender, EventArgs e)
     {
@@ -277,8 +310,8 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             "반드시 마인크래프트를 완전히 종료하고 초기화를 진행해 주세요.\n" +
             "런처 초기화를 진행하시겠습니까? \n", "", MessageBoxButtons.YesNo);
 
-        
-        if (deleteConfirm == DialogResult.Yes) 
+
+        if (deleteConfirm == DialogResult.Yes)
         {
             try
             {
@@ -288,7 +321,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             {
                 MessageBox.Show($"초기화 실패: {ex.Message}");
             }
-            
+
         }
 
         this.Enabled = true;
@@ -297,8 +330,8 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
     private void DeleteAll()
     {
         string launcherPath = _launcher.MinecraftPath.BasePath;
-        
-        if(!Directory.Exists(launcherPath))
+
+        if (!Directory.Exists(launcherPath))
         {
             MessageBox.Show("파일이 존재하지 않습니다.");
             return;
@@ -312,13 +345,26 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
         pbFiles.Maximum = total;
         pbFiles.Value = 0;
+        ResetLbProgress();
         SetProgress(0, $"초기화 중...");
-        lbProgress.Refresh();
+
+
+        HashSet<string> excludedFiles = new HashSet<string>
+        {
+            Path.Combine(launcherPath, "option.txt"),
+            Path.Combine(launcherPath, "memory.txt")
+        };
+
+        string xaeroFolderPath = Path.Combine(launcherPath, "xaero");
 
         for (int i = 0; i < files.Length; i++)
         {
             string file = files[i];
 
+            if (excludedFiles.Contains(file) || file.StartsWith(xaeroFolderPath + Path.DirectorySeparatorChar))
+            {
+                continue;
+            }
             try
             {
                 File.Delete(file);
@@ -328,7 +374,6 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             {
                 failed++;
             }
-
             //진행도 계산 및 출력
             pbFiles.Value = deleted;
             int percent = (int)((deleted / (float)total) * 100);
@@ -338,14 +383,20 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         //폴더들 삭제
         for (int i = directories.Length - 1; i >= 0; i--)
         {
-            try 
-            { 
-                Directory.Delete(directories[i], true); 
+            string dir = directories[i];
+
+            if (dir.StartsWith(xaeroFolderPath + Path.DirectorySeparatorChar))
+            {
+                continue;
+            }
+            try
+            {
+                Directory.Delete(dir, true);
                 deleted++;
             }
-            catch 
-            { 
-                failed++; 
+            catch
+            {
+                failed++;
             }
 
             //진행도 계산 및 출력
@@ -376,7 +427,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             "RyocatLauncher", "memory.txt");
         File.WriteAllText(path, selectedMemoryMb.ToString());
     }
-    
+
     //메모리 불러오기
     private int LoadSelectedMemory()
     {
@@ -391,5 +442,13 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             }
         }
         return 4096;
+    }
+
+    private void ResetLbProgress()
+    {
+        using (Graphics g = lbProgress.CreateGraphics())
+        {
+            g.Clear(lbProgress.BackColor);
+        }
     }
 }
