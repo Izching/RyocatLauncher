@@ -239,7 +239,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
                     // 압축 해제
                     SetProgress(0, $"[Modpack] 압축 해제 중...");
-                    ZipFile.ExtractToDirectory(downloadedZipPath, basePath, true);
+                    BackupAndExtractFile(downloadedZipPath, basePath);
                     File.Delete(downloadedZipPath);
                     SetProgress(100, $"[Modpack] 압축 해제 완료");
 
@@ -257,20 +257,25 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
                     DialogResult deleteConfirm = MessageBox.Show("" +
                         "서버가 업데이트되었습니다.\n" +
                         "안정적인 이용을 위해 런처 파일을 초기화하고 최신 버전으로\n" +
-                        "업데이트해야 합니다.\n" +
+                        "업데이트합니다.\n" +
                         "(서버 플레이 기록에는 영향을 주지 않습니다)\n" +
+                        "반드시 게임을 완전히 종료하고 진행해 주세요.\n" +
                         "지금 초기화를 진행하시겠습니까? \n", "", MessageBoxButtons.YesNo);
 
                     if (deleteConfirm == DialogResult.Yes)
                     {
                         try
                         {
-                            DeleteAll();
+                            DeleteAllUpdate();
                         }
                         catch (Exception ex)
                         {
                             MessageBox.Show($"초기화 실패: {ex.Message}");
                         }
+                    } 
+                    else
+                    {
+                        Application.Exit();
                     }
 
                     this.Enabled = true;
@@ -285,8 +290,33 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         }
     }
 
-    //옵션(단축키,언어), 메모리 설정 파일, 미니맵 파일 제외 삭제
+    //옵션(단축키,언어)파일 백업 후 압축해제
+    private void BackupAndExtractFile(string downloadedZipPath, string basePath)
+    {
+        // 백업 대상 설정
+        string fileToBackup = "option.txt";
 
+        string backupPath = Path.Combine(basePath, "backup");
+        Directory.CreateDirectory(backupPath);
+
+        string filePath = Path.Combine(basePath, fileToBackup);
+        string destPath = Path.Combine(backupPath, fileToBackup);
+
+        if(File.Exists(filePath))
+        {
+            File.Copy(filePath, destPath, true);
+        }
+
+        ZipFile.ExtractToDirectory(downloadedZipPath, basePath, true);
+
+        if(File.Exists(destPath))
+        {
+            File.Copy(destPath, filePath, true);
+        }
+
+        Directory.Delete(backupPath, true);
+
+    }
 
 
     private void btnOpenLog_Click(object sender, EventArgs e)
@@ -305,8 +335,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
         DialogResult deleteConfirm = MessageBox.Show("Ryocat Launcher로 실행한 마인크래프트 파일과 메모리 설정 정보가\n" +
             "초기화됩니다. \n" +
-            "(Ryocat Launcher로 실행하지 않은 마인크래프트 파일은 영향 없음) \n" +
-            "서버의 모드팩이 변경되었거나 접속이 되지 않을 때 사용을 권장합니다.\n" +
+            "게임에 심각한 문제가 발생했을 때 또는 서버가 열려있으나 지속적으로 접속에 실패하는 경우에만 사용을 권장합니다.\n" +
             "반드시 마인크래프트를 완전히 종료하고 초기화를 진행해 주세요.\n" +
             "런처 초기화를 진행하시겠습니까? \n", "", MessageBoxButtons.YesNo);
 
@@ -349,9 +378,86 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         SetProgress(0, $"초기화 중...");
 
 
+        for (int i = 0; i < files.Length; i++)
+        {
+            string file = files[i];
+
+            try
+            {
+                File.Delete(file);
+                deleted++;
+            }
+            catch
+            {
+                failed++;
+            }
+            //진행도 계산 및 출력
+            pbFiles.Value = deleted;
+            int percent = (int)((deleted / (float)total) * 100);
+            SetProgress(percent, $"초기화 중... {percent}%");
+        }
+
+        //폴더들 삭제
+        for (int i = directories.Length - 1; i >= 0; i--)
+        {
+            string dir = directories[i];
+
+            try
+            {
+                Directory.Delete(dir, true);
+                deleted++;
+            }
+            catch
+            {
+                failed++;
+            }
+
+            //진행도 계산 및 출력
+            pbFiles.Value = deleted;
+            int percent = (int)((deleted / (float)total) * 100);
+            SetProgress(percent, $"초기화 중... {percent}%");
+        }
+
+        if (failed > 0)
+        {
+            SetProgress(100, $"초기화 실패");
+            MessageBox.Show($"일부 파일 삭제 실패\n 총 실패 파일 수: {failed}\n" +
+                "초기화를 재시도 하거나 수동으로 폴더를 삭제해주세요\n" +
+                $"경로명: {launcherPath}");
+        }
+        else
+        {
+            SetProgress(100, $"초기화 성공");
+            MessageBox.Show("초기화가 완료되었습니다. 런처를 재시작 해주세요");
+            Application.Exit();
+        }
+    }
+
+    private void DeleteAllUpdate()
+    {
+        string launcherPath = _launcher.MinecraftPath.BasePath;
+
+        if (!Directory.Exists(launcherPath))
+        {
+            MessageBox.Show("파일이 존재하지 않습니다.");
+            return;
+        }
+
+        string[] files = Directory.GetFiles(launcherPath, "*", SearchOption.AllDirectories);
+        string[] directories = Directory.GetDirectories(launcherPath, "*", SearchOption.AllDirectories);
+        int total = files.Length + directories.Length;
+        int deleted = 0;
+        int failed = 0;
+
+        pbFiles.Maximum = total;
+        pbFiles.Value = 0;
+        ResetLbProgress();
+        SetProgress(0, $"초기화 중...");
+
+
         HashSet<string> excludedFiles = new HashSet<string>
         {
-            Path.Combine(launcherPath, "option.txt"),
+            Path.Combine(launcherPath, "options.txt"),
             Path.Combine(launcherPath, "memory.txt")
         };
 
@@ -385,7 +491,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         {
             string dir = directories[i];
 
-            if (dir.StartsWith(xaeroFolderPath + Path.DirectorySeparatorChar))
+            if (dir.StartsWith(xaeroFolderPath + Path.DirectorySeparatorChar) || dir.StartsWith(xaeroFolderPath))
             {
                 continue;
             }
