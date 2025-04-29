@@ -159,6 +159,8 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
             await DownloadAndUpdateFiles(basePath);
 
+            SetProgress(100, "게임 실행 중... 잠시만 기다려 주세요");
+
             var process = await _launcher.CreateProcessAsync(FabricVersionName, new MLaunchOption
             {
                 Session = _session,
@@ -168,6 +170,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             });
 
             SetProgress(100, "게임 실행 중... 잠시만 기다려 주세요");
+
             logForm = new LogForm();
             logForm.Hide(); //초기설정으로 로그 숨김
 
@@ -216,15 +219,11 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
         using (var client = new WebClient())
         {
-            client.DownloadProgressChanged += (s, e) =>
-            {
-                SetProgress(e.ProgressPercentage, $"[Modpack] 다운로드 중... {e.ProgressPercentage}%");
-                pbFiles.Maximum = 100;
-                pbFiles.Value = e.ProgressPercentage;
-            };
 
             try
             {
+                ResetLbProgress();
+                SetProgress(0, $"서버 버전 확인 중...");
                 // 서버의 해시값 다운로드
                 string serverHash = await client.DownloadStringTaskAsync(serverHashUrl);
                 serverHash = serverHash.Trim(); // 줄바꿈이나 공백 제거
@@ -234,6 +233,12 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
                 if (previousHash == null)
                 {
+                    client.DownloadProgressChanged += (s, e) =>
+                    {
+                        SetProgress(e.ProgressPercentage, $"[Modpack] 다운로드 중... {e.ProgressPercentage}%");
+                        pbFiles.Maximum = 100;
+                        pbFiles.Value = e.ProgressPercentage;
+                    };
                     // 해시 값이 다를 경우 zip 파일 다운로드
                     await client.DownloadFileTaskAsync(ModpackUrl, downloadedZipPath);
 
@@ -335,7 +340,8 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
         DialogResult deleteConfirm = MessageBox.Show("Ryocat Launcher로 실행한 마인크래프트 파일과 메모리 설정 정보가\n" +
             "초기화됩니다. \n" +
-            "게임에 심각한 문제가 발생했을 때 또는 서버가 열려있으나 지속적으로 접속에 실패하는 경우에만 사용을 권장합니다.\n" +
+            "게임에 심각한 문제가 발생했을 때 또는 서버가 열려있으나 지속적으로\n" +
+            "접속에 실패하는 경우에만 사용을 권장합니다.\n" +
             "반드시 마인크래프트를 완전히 종료하고 초기화를 진행해 주세요.\n" +
             "런처 초기화를 진행하시겠습니까? \n", "", MessageBoxButtons.YesNo);
 
@@ -422,13 +428,13 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         {
             SetProgress(100, $"초기화 실패");
             MessageBox.Show($"일부 파일 삭제 실패\n 총 실패 파일 수: {failed}\n" +
-                "초기화를 재시도 하거나 수동으로 폴더를 삭제해주세요\n" +
+                "초기화를 재시도하거나 수동으로 폴더를 삭제해 주세요\n" +
                 $"경로명: {launcherPath}");
         }
         else
         {
             SetProgress(100, $"초기화 성공");
-            MessageBox.Show("초기화가 완료되었습니다. 런처를 재시작 해주세요");
+            MessageBox.Show("초기화가 완료되었습니다. 런처를 재시작해 주세요");
             Application.Exit();
         }
     }
@@ -515,13 +521,13 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         {
             SetProgress(100, $"초기화 실패");
             MessageBox.Show($"일부 파일 삭제 실패\n 총 실패 파일 수: {failed}\n" +
-                "초기화를 재시도 하거나 수동으로 폴더를 삭제해주세요\n" +
+                "초기화를 재시도하거나 수동으로 폴더를 삭제해 주세요\n" +
                 $"경로명: {launcherPath}");
         }
         else
         {
             SetProgress(100, $"초기화 성공");
-            MessageBox.Show("초기화가 완료되었습니다. 런처를 재시작 해주세요");
+            MessageBox.Show("초기화가 완료되었습니다. 런처를 재시작해 주세요");
             Application.Exit();
         }
     }
