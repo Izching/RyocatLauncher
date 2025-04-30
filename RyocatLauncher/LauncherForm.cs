@@ -3,6 +3,7 @@ using CmlLib.Core.Auth;
 using CmlLib.Utils;
 using System.Net;
 using System.IO.Compression;
+using System.Diagnostics;
 
 namespace RyocatLauncher;
 
@@ -159,7 +160,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
             await DownloadAndUpdateFiles(basePath);
 
-            SetProgress(100, "게임 실행 중... 잠시만 기다려 주세요");
+            SetProgress(100, "[Minecraft] 실행 대기 중...");
 
             var process = await _launcher.CreateProcessAsync(FabricVersionName, new MLaunchOption
             {
@@ -427,14 +428,15 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         if (failed > 0)
         {
             SetProgress(100, $"초기화 실패");
-            MessageBox.Show($"일부 파일 삭제 실패\n 총 실패 파일 수: {failed}\n" +
+            MessageBox.Show($"일부 파일 삭제 실패\n총 실패 파일 수: {failed}\n" +
                 "초기화를 재시도하거나 수동으로 폴더를 삭제해 주세요\n" +
                 $"경로명: {launcherPath}");
         }
         else
         {
             SetProgress(100, $"초기화 성공");
-            MessageBox.Show("초기화가 완료되었습니다. 런처를 재시작해 주세요");
+            MessageBox.Show("초기화가 완료되었습니다. 런처를 재시작합니다.");
+            Process.Start(Application.ExecutablePath);
             Application.Exit();
         }
     }
@@ -520,14 +522,16 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         if (failed > 0)
         {
             SetProgress(100, $"초기화 실패");
-            MessageBox.Show($"일부 파일 삭제 실패\n 총 실패 파일 수: {failed}\n" +
+            MessageBox.Show($"일부 파일 삭제 실패\n총 실패 파일 수: {failed}\n" +
                 "초기화를 재시도하거나 수동으로 폴더를 삭제해 주세요\n" +
                 $"경로명: {launcherPath}");
+            Application.Exit();
         }
         else
         {
             SetProgress(100, $"초기화 성공");
-            MessageBox.Show("초기화가 완료되었습니다. 런처를 재시작해 주세요");
+            MessageBox.Show("초기화가 완료되었습니다. 런처를 재시작합니다.");
+            Process.Start(Application.ExecutablePath);
             Application.Exit();
         }
     }
