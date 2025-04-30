@@ -184,12 +184,21 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         {
             MessageBox.Show($"게임 실행 실패: {ex.Message}");
         }
-        await Task.Delay(60000); //1분 대기
-
+        await ShowLoadingMessage(); //1분 대기
         this.Enabled = true;
     }
 
-
+    //1분 대기하면서 Progress 메세지를 계속 갱신
+    private async Task ShowLoadingMessage()
+    {
+        int dotCount = 0;
+        for (int i = 0; i < 60; i++)
+        {
+            dotCount = (i % 5) + 1;
+            SetProgress(100, $"게임 실행 중... 잠시만 기다려 주세요{new string('.', dotCount)}");
+            await Task.Delay(1000);
+        }
+    }
 
     private void btnSetting_Click(object sender, EventArgs e)
     {
