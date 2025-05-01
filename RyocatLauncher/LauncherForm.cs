@@ -309,7 +309,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
     private void BackupAndExtractFile(string downloadedZipPath, string basePath)
     {
         // 백업 대상 설정
-        string fileToBackup = "option.txt";
+        string fileToBackup = "options.txt";
 
         string backupPath = Path.Combine(basePath, "backup");
         Directory.CreateDirectory(backupPath);
@@ -479,12 +479,13 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         };
 
         string xaeroFolderPath = Path.Combine(launcherPath, "xaero");
+        string localFolderPath = Path.Combine(launcherPath, "local");
 
         for (int i = 0; i < files.Length; i++)
         {
             string file = files[i];
 
-            if (excludedFiles.Contains(file) || file.StartsWith(xaeroFolderPath + Path.DirectorySeparatorChar))
+            if (excludedFiles.Contains(file) || file.StartsWith(xaeroFolderPath + Path.DirectorySeparatorChar) || file.StartsWith(localFolderPath + Path.DirectorySeparatorChar))
             {
                 continue;
             }
@@ -508,7 +509,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         {
             string dir = directories[i];
 
-            if (dir.StartsWith(xaeroFolderPath + Path.DirectorySeparatorChar) || dir.StartsWith(xaeroFolderPath))
+            if (dir.StartsWith(xaeroFolderPath + Path.DirectorySeparatorChar) || dir.StartsWith(xaeroFolderPath) || dir.StartsWith(localFolderPath + Path.DirectorySeparatorChar) || dir.StartsWith(localFolderPath))
             {
                 continue;
             }
