@@ -120,7 +120,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
     private async void btnStart_Click(object sender, EventArgs e)
     {
         this.Enabled = false;
-        const string FabricVersionName = "fabric-loader-0.16.10-1.21.1"; // Fabric 버전명
+        const string FabricVersionName = "fabric-loader-0.16.12-1.21.1"; // Fabric 버전명
         string versionPath = Path.Combine(_launcher.MinecraftPath.Versions, FabricVersionName);
         var path = _launcher.MinecraftPath;
         string basePath = _launcher.MinecraftPath.BasePath;
@@ -141,7 +141,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
                     try
                     {
                         SetProgress(0, "[Fabric] 다운로드 중...");
-                        string zipUrl = $"https://meta.fabricmc.net/v2/versions/loader/1.21.1/0.16.10/profile/zip";
+                        string zipUrl = $"https://meta.fabricmc.net/v2/versions/loader/1.21.1/0.16.12/profile/zip";
                         await client.DownloadFileTaskAsync(zipUrl, FabricZipPath);
                         ZipFile.ExtractToDirectory(FabricZipPath, _launcher.MinecraftPath.Versions, true);
                         File.Delete(FabricZipPath);
@@ -478,14 +478,19 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
             Path.Combine(launcherPath, "memory.txt")
         };
 
-        string xaeroFolderPath = Path.Combine(launcherPath, "xaero");
-        string localFolderPath = Path.Combine(launcherPath, "local");
+        List<string> excludedFolders = new List<string>
+        {
+            Path.Combine(launcherPath, "xaero") + Path.DirectorySeparatorChar,
+            Path.Combine(launcherPath, "local") + Path.DirectorySeparatorChar,
+            Path.Combine(launcherPath, "screenshots") + Path.DirectorySeparatorChar
+        };
+        
 
         for (int i = 0; i < files.Length; i++)
         {
             string file = files[i];
 
-            if (excludedFiles.Contains(file) || file.StartsWith(xaeroFolderPath + Path.DirectorySeparatorChar) || file.StartsWith(localFolderPath + Path.DirectorySeparatorChar))
+            if (excludedFiles.Contains(file) || excludedFolders.Any(folder => file.StartsWith(folder)))
             {
                 continue;
             }
@@ -509,7 +514,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         {
             string dir = directories[i];
 
-            if (dir.StartsWith(xaeroFolderPath + Path.DirectorySeparatorChar) || dir.StartsWith(xaeroFolderPath) || dir.StartsWith(localFolderPath + Path.DirectorySeparatorChar) || dir.StartsWith(localFolderPath))
+            if (excludedFolders.Any(folder => dir == folder || dir.StartsWith(folder + Path.DirectorySeparatorChar)))
             {
                 continue;
             }

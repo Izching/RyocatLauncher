@@ -5,7 +5,7 @@ using XboxAuthNet.OAuth;
 
 namespace RyocatLauncher;
 
-public partial class AccountForm : Form
+public partial class AccountForm : MetroFramework.Forms.MetroForm
 {
     JELoginHandler _loginHandler;
 
@@ -128,11 +128,12 @@ public partial class AccountForm : Form
 
     private void showLauncherForm(MSession session)
     {
-        var form = new LauncherForm(session);
-        form.Show();
-
         exitOnClose = false;
-        this.Close();
+
+        var launcherForm = new LauncherForm(session);
+        launcherForm.Show();
+
+        this.BeginInvoke((Action)(() => this.Close()));
     }
 
     private void AccountForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -140,5 +141,4 @@ public partial class AccountForm : Form
         if (exitOnClose)
             Environment.Exit(0);
     }
-
 }

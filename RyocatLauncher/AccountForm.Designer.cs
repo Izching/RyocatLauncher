@@ -40,11 +40,11 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("맑은 고딕", 18F, FontStyle.Bold, GraphicsUnit.Point);
-            label1.Location = new Point(102, 27);
+            label1.Location = new Point(71, 40);
             label1.Name = "label1";
-            label1.Size = new Size(277, 32);
+            label1.Size = new Size(283, 32);
             label1.TabIndex = 0;
-            label1.Text = "YUMC 모드 서버 접속기";
+            label1.Text = "YUMC Ryocat Launcher";
             // 
             // label2
             // 
@@ -59,13 +59,13 @@
             // 
             flAccounts.Location = new Point(12, 102);
             flAccounts.Name = "flAccounts";
-            flAccounts.Size = new Size(450, 297);
+            flAccounts.Size = new Size(400, 297);
             flAccounts.TabIndex = 2;
             // 
             // lbNoAccountInfo
             // 
             lbNoAccountInfo.AutoSize = true;
-            lbNoAccountInfo.Location = new Point(97, 235);
+            lbNoAccountInfo.Location = new Point(69, 235);
             lbNoAccountInfo.Name = "lbNoAccountInfo";
             lbNoAccountInfo.Size = new Size(287, 30);
             lbNoAccountInfo.TabIndex = 5;
@@ -76,7 +76,7 @@
             // 
             btnNewAccount.Location = new Point(12, 405);
             btnNewAccount.Name = "btnNewAccount";
-            btnNewAccount.Size = new Size(449, 65);
+            btnNewAccount.Size = new Size(400, 65);
             btnNewAccount.TabIndex = 3;
             btnNewAccount.Text = "새 계정 등록";
             btnNewAccount.UseVisualStyleBackColor = true;
@@ -86,7 +86,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(474, 481);
+            ClientSize = new Size(424, 481);
             Controls.Add(lbNoAccountInfo);
             Controls.Add(btnNewAccount);
             Controls.Add(flAccounts);
