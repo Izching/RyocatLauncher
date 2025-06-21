@@ -480,9 +480,9 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
 
         List<string> excludedFolders = new List<string>
         {
-            Path.Combine(launcherPath, "xaero") + Path.DirectorySeparatorChar,
-            Path.Combine(launcherPath, "local") + Path.DirectorySeparatorChar,
-            Path.Combine(launcherPath, "screenshots") + Path.DirectorySeparatorChar
+            Path.Combine(launcherPath, "xaero"),
+            Path.Combine(launcherPath, "local"),
+            Path.Combine(launcherPath, "screenshots")
         };
         
 
@@ -490,7 +490,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         {
             string file = files[i];
 
-            if (excludedFiles.Contains(file) || excludedFolders.Any(folder => file.StartsWith(folder)))
+            if (excludedFiles.Contains(file) || excludedFolders.Any(folder => file.StartsWith(folder + Path.DirectorySeparatorChar)))
             {
                 continue;
             }
@@ -514,7 +514,7 @@ public partial class LauncherForm : MetroFramework.Forms.MetroForm
         {
             string dir = directories[i];
 
-            if (excludedFolders.Any(folder => dir == folder || dir.StartsWith(folder + Path.DirectorySeparatorChar)))
+            if (excludedFolders.Any(folder => dir.Equals(folder) || dir.StartsWith(folder + Path.DirectorySeparatorChar)))
             {
                 continue;
             }
